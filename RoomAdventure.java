@@ -9,7 +9,7 @@ public class RoomAdventure {
 
     //constants
     final private static String DEFAULT_STATUS = 
-        "Sorry, I do not understand. Try [verb] [noun]. Valid verbs include 'go', 'look', and 'take'."; //default error message
+        "Sorry, I do not understand. Try [verb] [noun]. Valid verbs include 'go', 'look', 'take', and 'eat'."; //default error message
 
     private static void handleGo(String noun) {//Handles moving between rooms
         String[] exitDirections = currentRoom.getExitDirections(); // get available directions
