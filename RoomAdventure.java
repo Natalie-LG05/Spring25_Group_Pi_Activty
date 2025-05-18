@@ -5,10 +5,11 @@ public class RoomAdventure {
     private static Room currentRoom; // the room the player is ucrrently in
     private static String[] inventory = {null, null, null, null, null}; // player inventory slots
     private static String status; // message to display after each action
+    private static boolean death = false;
 
     //constants
     final private static String DEFAULT_STATUS = 
-        "Sorry, I do not understand. Try [verb] [noun]. Valid verbs include 'go', 'look', and 'take'."; //default error message
+        "Sorry, I do not understand. Try [verb] [noun]. Valid verbs include 'go', 'look', 'take', and 'eat'."; //default error message
 
     private static void handleGo(String noun) {//Handles moving between rooms
         String[] exitDirections = currentRoom.getExitDirections(); // get available directions
@@ -49,6 +50,17 @@ public class RoomAdventure {
         }
     }
 
+    private static void handleEat(String noun) {
+        String[] edibles = currentRoom.getEdibles();
+        status = "I can't eat that, silly goose.";
+        for(String item : edibles){
+            if (noun.equals(item)){
+                status = "You have eaten it. You seem to have died! Too bad.\n";
+                death = true;
+            }
+        }
+    }
+
     private static void setupGame() { // initializes game world
         Room room1 = new Room("Room 1"); // create room 1
         Room room2 = new Room("Room 2"); // create room 2 
@@ -66,10 +78,10 @@ public class RoomAdventure {
         room1.setExitDestinations(room1ExitDestinations);
         room1.setItems(room1Items);
         room1.setItemDescriptions(room1ItemDescriptions);
-        room1.setGrabbalbes(room1Grabbables);
+        room1.setGrabbables(room1Grabbables);
 
         String[] room2ExitDirections = {"west", "south"}; // room 1 exits
-        Room[] room2ExitDestinations = {room1, room4}; // destination rooms for room 1
+        Room[] room2ExitDestinations = {room1};//, room4}; // destination rooms for room 1
         String[] room2Items = {"fireplace", "rug"}; // items in room 1
         String[] room2ItemDescriptions = {
             "It's on fire.",
@@ -80,21 +92,23 @@ public class RoomAdventure {
         room2.setExitDestinations(room2ExitDestinations);
         room2.setItems(room2Items);
         room2.setItemDescriptions(room2ItemDescriptions);
-        room2.setGrabbalbes(room2Grabbables);
+        room2.setGrabbables(room2Grabbables);
 
         String[] room3ExitDirections = {"north","east"}; // room 1 exits
-        Room[] room3ExitDestinations = {room1,room4}; // destination rooms for room 1
+        Room[] room3ExitDestinations = {room1};//,room4}; // destination rooms for room 1
         String[] room3Items = {"oven", "cutting-board"}; // items in room 1
         String[] room3ItemDescriptions = {
             "It's cold and dirty.",
-            "There is a partially cut lemon and a knife."
+            "There is a partially cut, weird smelling lemon and a knife."
         };
         String[] room3Grabbables = {"knife"}; // items you can take from room 1
+        String[] room3Edibles = {"lemon"};
         room3.setExitDirections(room3ExitDirections);
         room3.setExitDestinations(room3ExitDestinations);
         room3.setItems(room3Items);
         room3.setItemDescriptions(room3ItemDescriptions);
-        room3.setGrabbalbes(room3Grabbables);
+        room3.setGrabbables(room3Grabbables);
+        room3.setEdibles(room3Edibles);
 
         currentRoom = room1; // start game in room 1
     }
@@ -130,10 +144,16 @@ public class RoomAdventure {
                 case "take":
                     handleTake(noun); // pick up an item
                     break;
+                case "eat":
+                    handleEat(noun);
+                    break;
                 default:
                     status = DEFAULT_STATUS; // set status to error message
             }
             System.out.println(status); // print status
+            if (death == true){
+                System.exit(0);
+            }
         }    
     }
 }
@@ -144,7 +164,8 @@ class Room { // represents a game room
     private Room[] exitDestinations; // rooms reached by each direction
     private String[] items; // items visible in the room
     private String[] itemDescriptions; // descriptions for those items
-    private String[] grabbables; // item syou can take
+    private String[] grabbables; // items you can take
+    private String[] edibles;
 
     public Room(String name) { //constructor
         this.name = name; //set the room's name    
@@ -182,12 +203,20 @@ class Room { // represents a game room
         return itemDescriptions;    
     }
 
-    public void setGrabbalbes(String[] grabbables) {// setter for grabbable items
+    public void setGrabbables(String[] grabbables) {// setter for grabbable items
         this.grabbables = grabbables;   
     }
 
     public String[] getGrabbables() {// getter for grabbable items
         return grabbables;    
+    }
+
+    public void setEdibles(String[] edibles) {// setter for grabbable items
+        this.edibles = edibles;   
+    }
+
+    public String[] getEdibles() {// getter for grabbable items
+        return edibles;    
     }
 
     // @Override don't need
