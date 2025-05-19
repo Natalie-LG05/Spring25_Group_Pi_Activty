@@ -65,6 +65,7 @@ public class RoomAdventure {
         Room room1 = new Room("Room 1"); // create room 1
         Room room2 = new Room("Room 2"); // create room 2 
         Room room3 = new Room("Room 3");
+        Room room4 = new Room("Room 4");
         
         String[] room1ExitDirections = {"east", "south"}; // room 1 exits
         Room[] room1ExitDestinations = {room2, room3}; // destination rooms for room 1
@@ -81,7 +82,7 @@ public class RoomAdventure {
         room1.setGrabbables(room1Grabbables);
 
         String[] room2ExitDirections = {"west", "south"}; // room 1 exits
-        Room[] room2ExitDestinations = {room1};//, room4}; // destination rooms for room 1
+        Room[] room2ExitDestinations = {room1, room4}; // destination rooms for room 1
         String[] room2Items = {"fireplace", "rug"}; // items in room 1
         String[] room2ItemDescriptions = {
             "It's on fire.",
@@ -94,14 +95,14 @@ public class RoomAdventure {
         room2.setItemDescriptions(room2ItemDescriptions);
         room2.setGrabbables(room2Grabbables);
 
-        String[] room3ExitDirections = {"north","east"}; // room 1 exits
-        Room[] room3ExitDestinations = {room1};//,room4}; // destination rooms for room 1
-        String[] room3Items = {"oven", "cutting-board"}; // items in room 1
+        String[] room3ExitDirections = {"north","east"}; // room 3 exits
+        Room[] room3ExitDestinations = {room1, room4}; // destination rooms for room 3
+        String[] room3Items = {"oven", "cutting-board"}; // items in room 3
         String[] room3ItemDescriptions = {
             "It's cold and dirty.",
             "There is a partially cut, weird smelling lemon and a knife."
         };
-        String[] room3Grabbables = {"knife"}; // items you can take from room 1
+        String[] room3Grabbables = {"knife"}; // items you can take from room 3
         String[] room3Edibles = {"lemon"};
         room3.setExitDirections(room3ExitDirections);
         room3.setExitDestinations(room3ExitDestinations);
@@ -109,6 +110,22 @@ public class RoomAdventure {
         room3.setItemDescriptions(room3ItemDescriptions);
         room3.setGrabbables(room3Grabbables);
         room3.setEdibles(room3Edibles);
+
+        String[] room4ExitDirections = {"north","west"}; // room 4 exits
+        Room[] room4ExitDestinations = {room2, room4}; // destination rooms for room 4
+        String[] room4Items = {"a mirror", "a bat"}; // items in room 4
+        String[] room4ItemDescriptions = {
+            "You can see the room, but you are not in it. You can see a harmonica in the corner now.",
+            "Is it a bat or a bat? You cannot tell"
+        };
+        String[] room4Grabbables = {"harmonica"}; // items you can take from room 4
+        String[] room4Edibles = {};
+        room4.setExitDirections(room4ExitDirections);
+        room4.setExitDestinations(room4ExitDestinations);
+        room4.setItems(room4Items);
+        room4.setItemDescriptions(room4ItemDescriptions);
+        room4.setGrabbables(room4Grabbables);
+        room4.setEdibles(room4Edibles);
 
         currentRoom = room1; // start game in room 1
     }
