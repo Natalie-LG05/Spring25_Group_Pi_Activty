@@ -132,15 +132,18 @@ public class RoomAdventure {
     //@SuppressWarnings("java:S2189") don't need
     public static void main(String[] args){// entry point of the program
         setupGame(); // initialize rooms, items, and starting room
+        Scanner s = new Scanner(System.in);
+
+        System.out.println("What is your name?: ");
+        String playerName = s.nextLine();
         while(true){// game loop, runs until program is terminated
             System.out.print(currentRoom.toString());// display current room desription
-            System.out.print("Inventory: "); // promtot for invetory display
+            System.out.print(playerName + "'s inventory: "); // promtot for invetory display
             
             for (int i = 0; i < inventory.length; i++){
                 System.out.print(inventory[i] + " ");
             }
-            System.out.println("\nWhat would you like to do? ");
-            Scanner s = new Scanner(System.in);
+            System.out.println("\nWhat would you like to do, " + playerName + "?");
             String input = s.nextLine(); // read entire line of input
             String[] words = input.split(" ");
 
