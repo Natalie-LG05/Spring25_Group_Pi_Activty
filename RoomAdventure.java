@@ -88,7 +88,7 @@ public class RoomAdventure {
     private static void handleUse(String noun){
         status = "Why?";
         for (Item item: inventory){
-            if(item!= null && item.toString().equals("key") && noun.equals("key")){
+            if (item != null && item.toString().equals("key") && noun.equals("key")) {
                 if (currentRoom.getRoomName().equals("Room 4")) {
                     for (Item roomItem: currentRoom.getItems()) {
                         if (roomItem.toString().equals("door")) {
@@ -101,18 +101,20 @@ public class RoomAdventure {
             } else if (item != null && item.toString().equals("knife") && noun.equals("knife")) {
                 status = "You use the knife on yourself. You stabbed yourself. Why?";
                 death = true;
+                break;
             } else if (item != null && item.toString().equals("coal") && noun.equals("coal")) {
                 if (currentRoom.getRoomName().equals("Room 2")) {
                     status = "You throw the coal into the fire. It gets brighter and hotter. You blow up.";
                     death = true;
                 }
+                break;
             } else if (item != null && item.toString().equals("bat") && noun.equals("bat")) {
                 if (currentRoom.getRoomName().equals("Room 3")) {
                     status = "You put the bat into the oven. I don't know why you did that. You take it back out.";
                 }
+                break;
             }
         }
-
     }
 
     private static void setupGame() { // initializes game world
