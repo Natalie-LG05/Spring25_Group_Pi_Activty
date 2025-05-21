@@ -4,7 +4,7 @@ import java.util.List; //making lists
 
 public class RoomAdventure {
     // class variables
-    private static Room currentRoom; // the room the player is ucrrently in
+    private static Room currentRoom; // the room the player is currently in
     private static Item[] inventory = {null, null, null, null, null}; // player inventory slots
     private static String status; // message to display after each action
     private static boolean death = false;
@@ -68,7 +68,7 @@ public class RoomAdventure {
         for (Item item: inventory){
             if(item != null && item.toString().equals("harmonica")){
                 if (currentRoom.getRoomName().equals("Room 4")){
-                    status = "You played the harmonica beautifully, the mirror shimmers turining into a door.";
+                    status = "You played the harmonica beautifully, the mirror shimmers turning into a door.";
                     for (Item roomItem : currentRoom.getItems()) {
                         if (roomItem.toString().equals("mirror")) {
                             roomItem.setDescription("The mirror turned into a wooden door. There's a keyhole.");
@@ -230,8 +230,8 @@ public class RoomAdventure {
         System.out.println("What is your name?: ");
         String playerName = s.nextLine();
         while(true){// game loop, runs until program is terminated
-            System.out.print(currentRoom.toString());// display current room desription
-            System.out.print(playerName + "'s inventory: "); // promtot for invetory display
+            System.out.print(currentRoom.toString());// display current room description
+            System.out.print(playerName + "'s inventory: "); // prompt for inventory display
             
             for (int i = 0; i < inventory.length; i++){
                 if(inventory[i] != null){
@@ -277,7 +277,7 @@ public class RoomAdventure {
                 System.exit(0);
             }
             if (win == true){
-                System.out.println("Congragulations!");
+                System.out.println("Congratulations!");
                 System.exit(0);
             }
         }    
@@ -390,8 +390,8 @@ class Item{
         return description;
     }
 
-    public void setIsGrabbable(boolean grababble){
-        isGrabbable = grababble;
+    public void setIsGrabbable(boolean grabbable){
+        isGrabbable = grabbable;
     }
 
     public boolean getIsGrabbable(){
