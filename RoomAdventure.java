@@ -8,10 +8,11 @@ public class RoomAdventure {
     private static Item[] inventory = {null, null, null, null, null}; // player inventory slots
     private static String status; // message to display after each action
     private static boolean death = false;
+    private static boolean win = false;
 
     //constants
     final private static String DEFAULT_STATUS = 
-        "Sorry, I do not understand. Try [verb] [noun]. Valid verbs include 'go', 'look', 'take', and 'eat'."; //default error message
+        "Sorry, I do not understand. Try [verb] [noun]. Valid verbs include 'go', 'look', 'take', 'play', 'use' and 'eat'."; //default error message
 
     private static void handleGo(String noun) {//Handles moving between rooms
         String[] exitDirections = currentRoom.getExitDirections(); // get available directions
@@ -60,6 +61,54 @@ public class RoomAdventure {
                 death = true;
             }
         }
+    }
+
+    private static void handlePlay(String noun){
+        status = "um no";
+        for (Item item: inventory){
+            if(item != null && item.toString().equals("harmonica")){
+                if (currentRoom.getRoomName().equals("Room 4")){
+                    status = "You played the harmonica beautifully, the mirror shimmers turining into a door.";
+                    for (Item roomItem : currentRoom.getItems()) {
+                        if (roomItem.toString().equals("mirror")) {
+                            roomItem.setDescription("The mirror turned into a wooden door. There's a keyhole.");
+                            roomItem.setItemName("door");
+                        }
+                    }
+                }else{
+                    status = "The harmonica sounds like the screeching wails of the dead, you are not good at this.";
+                }
+            }
+        }
+    }
+
+    private static void handleUse(String noun){
+        status = "Why?";
+        for (Item item: inventory){
+            if(item!= null && item.toString().equals("key") && noun.equals("key")){
+                if (currentRoom.getRoomName().equals("Room 4")){
+                    for(Item roomItem: currentRoom.getItems()){
+                        if (roomItem.toString().equals("door")){
+                            status = "You use the key on the door and open it. There is a bright light and you exit the four roomed purgatory. You are free.";
+                            win = true;
+                        }
+                    }
+                }
+            } else if(item != null && item.toString().equals("knife") && noun.equals("knife")){
+                status = "You use the knife on yourself. You stabbed yourself. Why?";
+                death = true;
+            } else if(item != null && item.toString().equals("coal") && noun.equals("coal")){
+                if (currentRoom.getRoomName().equals("Room 2")){
+                    status = "You throw the coal into the fire. It gets brighter and hotter. You blow up.";
+                    death = true;
+                }
+            } else if(item != null && item.toString().equals("bat") && noun.equals("bat")){
+                if (currentRoom.getRoomName().equals("Room 3")){
+                    status = "You put the bat into the oven. I don't know why you did that. You take it back out.";
+                }
+            }
+        }
+
     }
 
     private static void setupGame() { // initializes game world
@@ -133,7 +182,6 @@ public class RoomAdventure {
         Item lemon = new Item("lemon");
         lemon.setDescription("It smells weird and looks a bit not lemon-y");
         lemon.setIsEdible(true);
-        lemon.setIsGrabbable(true);
 
         Item knife = new Item("knife");
         knife.setDescription("It's pretty sharp, I should be careful.");
@@ -149,7 +197,7 @@ public class RoomAdventure {
 
         // Room 4 setup
         String[] room4ExitDirections = {"north","west"}; // room 4 exits
-        Room[] room4ExitDestinations = {room2, room4}; // destination rooms for room 4
+        Room[] room4ExitDestinations = {room2, room3}; // destination rooms for room 4
 
         // Room 4 Items
         Item mirror = new Item("mirror");
@@ -214,11 +262,22 @@ public class RoomAdventure {
                 case "eat":
                     handleEat(noun);
                     break;
+                case "play":
+                    handlePlay(noun);
+                    break;
+                case "use":
+                    handleUse(noun);
+                    break;
                 default:
                     status = DEFAULT_STATUS; // set status to error message
             }
             System.out.println(status); // print status
             if (death == true){
+                System.out.println("You have perished.");
+                System.exit(0);
+            }
+            if (win == true){
+                System.out.println("Congragulations!");
                 System.exit(0);
             }
         }    
@@ -234,6 +293,14 @@ class Room { // represents a game room
     public Room(String name) { //constructor
         this.name = name; //set the room's name
         this.items = new ArrayList<>(); // Initialize item list
+    }
+
+    public void setRoomName(String name){
+        this.name = name;
+    }
+
+    public String getRoomName(){
+        return name;
     }
 
     public void setExitDirections(String[] exitDirections){// setter for exits
@@ -307,6 +374,14 @@ class Item{
     }
 
     //Getters and Setters
+    public void setItemName(String name){
+        this.name = name;
+    }
+
+    public String getItemName(){
+        return name;
+    }
+
     public void setDescription(String desc){
         description = desc;
     }
