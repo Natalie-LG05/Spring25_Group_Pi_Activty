@@ -5,7 +5,7 @@ import java.util.List; //making lists
 public class RoomAdventure {
     // class variables
     private static Room currentRoom; // the room the player is currently in
-    private static Item[] inventory = {null, null, null, null, null}; // player inventory slots
+    private static ArrayList<Item> inventory = new ArrayList<>(); // player inventory
     private static String status; // message to display after each action
     private static boolean running = true;
     private static boolean death = false;
@@ -40,16 +40,10 @@ public class RoomAdventure {
         status = "I can't grab that."; // default if not grabbable
         for (Item item : currentRoom.getGrabbableItems()) { // loop through grabbable items
             if (item.toString().equals(noun)) { // if user-noun matches grabbable
-                for (int j = 0; j< inventory.length; j++) { // find empty inventory slot
-                    if (inventory[j] == null) { // if slot is empty
-                        inventory[j] = item; //add item to inventory
-                        status = "Added it to the inventory"; // update status
-                        currentRoom.getItems().remove(item); // removes item from room
-                        break; // exit inventory loop
-                    } else {
-                        status = "Your inventory is full";
-                    }
-                }    
+                inventory.add(item); // add item to inventory
+                status = "Added it to the inventory"; // update status
+                currentRoom.getItems().remove(item); // removes item from room
+                break;
             }    
         }
     }
@@ -113,6 +107,46 @@ public class RoomAdventure {
                     status = "You put the bat into the oven. I don't know why you did that. You take it back out.";
                 }
                 break;
+            } else if (item != null && item.toString().equals("gear") && noun.equals("gear")) {
+                if (currentRoom.getRoomName().equals("Room 5")) {
+                    for (Item roomItem : currentRoom.getItems()) {
+                        if (roomItem.toString().equals("strange_machine")) {
+                            // update the machine's description and the status
+                            status = "You put the gear into the machine. Suddenly, it activates, and a pokeball appears!";
+                            roomItem.setDescription("The machine is glowing. It seems to make unlimited pokeballs.");
+
+                            Item pokeball = new Item("pokeball"); // create a pokeball item
+                            pokeball.setDescription("A pokeball. It could be used to capture something...");
+                            inventory.add(pokeball); // add pokeball to inventory
+
+                            inventory.remove(item); // remove gear from inventory
+                            break;
+                        }
+                    }
+                }
+                break;
+            } else if (item != null && item.toString().equals("pokeball") && noun.equals("pokeball")) {
+                if (currentRoom.getRoomName().equals("Room 5")) {
+                    for (Item roomItem : currentRoom.getItems()) {
+                        if (roomItem.getItemName().equals("frog")) {
+                            inventory.add(roomItem); // add frog to inventory
+                            currentRoom.removeItem(roomItem); // remove frog from the room
+                            inventory.remove(item); // Remove the pokeball from inventory
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    private static void handleInspect(String noun) {
+        status = "I do not have that item."; // Set default status for inspect command
+        for (Item item: inventory) {
+            if (item != null && item.toString().equals(noun)) {
+                status = item.getDescription();
+                break;
             }
         }
     }
@@ -122,6 +156,7 @@ public class RoomAdventure {
         Room room2 = new Room("Room 2"); // create room 2 
         Room room3 = new Room("Room 3");
         Room room4 = new Room("Room 4");
+        Room room5 = new Room("Room 5");
         
         // Room 1 setup
         String[] room1ExitDirections = {"east", "south"}; // room 1 exits
@@ -202,8 +237,8 @@ public class RoomAdventure {
 
 
         // Room 4 setup
-        String[] room4ExitDirections = {"north","west"}; // room 4 exits
-        Room[] room4ExitDestinations = {room2, room3}; // destination rooms for room 4
+        String[] room4ExitDirections = {"north","west", "south"}; // room 4 exits
+        Room[] room4ExitDestinations = {room2, room3, room5}; // destination rooms for room 4
 
         // Room 4 Items
         Item mirror = new Item("mirror");
@@ -223,6 +258,29 @@ public class RoomAdventure {
         room4.addItem(mirror);
         room4.setExitDirections(room4ExitDirections);
         room4.setExitDestinations(room4ExitDestinations);
+
+        // Room 5 setup
+        String[] room5ExitDirections = {"north"}; // room 1 exits
+        Room[] room5ExitDestinations = {room4}; // destination rooms for room 1
+
+        // Room 5 Items
+        Item strange_machine = new Item("strange_machine");
+        strange_machine.setDescription("A strange, metal contraption of some sort. It looks like it is missing a gear.");
+        strange_machine.setIsGrabbable(false);
+
+        Item frog = new Item("frog");
+        frog.setDescription("It is a frog.");
+        frog.setIsGrabbable(false);
+
+        Item gear = new Item("gear");
+        gear.setDescription("A strange metal gear");
+        gear.setIsGrabbable(true);
+
+        room5.addItem(strange_machine);
+        room5.addItem(frog);
+        room5.addItem(gear);
+        room5.setExitDirections(room5ExitDirections);
+        room5.setExitDestinations(room5ExitDestinations);
 
         currentRoom = room1; // start game in room 1
     }
@@ -281,6 +339,9 @@ public class RoomAdventure {
                 case "use":
                     handleUse(noun);
                     break;
+                case "inspect":
+                    handleInspect(noun);
+                    break;
                 default:
                     status = DEFAULT_STATUS; // set status to error message
             }
@@ -307,7 +368,7 @@ class Room { // represents a game room
     private String name; //room name
     private String[] exitDirections; // directions you can go
     private Room[] exitDestinations; // rooms reached by each direction
-    private List<Item> items; // List of Item objects
+    private ArrayList<Item> items; // List of Item objects
 
     public Room(String name) { //constructor
         this.name = name; //set the room's name
@@ -340,6 +401,10 @@ class Room { // represents a game room
 
     public void addItem(Item item){ // setter for items
         items.add(item);    
+    }
+
+    public void removeItem(Item item) {
+        items.remove(item);
     }
 
     public List<Item> getItems() { //getter for items
@@ -386,7 +451,7 @@ class Item{
 
     private String name;
     private String description;
-    private boolean isGrabbable;
+    private boolean isGrabbable = false;
     private boolean isEdible;
 
     public Item(String name){
