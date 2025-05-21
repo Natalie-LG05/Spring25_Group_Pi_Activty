@@ -19,7 +19,7 @@ public class RoomAdventure {
         String[] exitDirections = currentRoom.getExitDirections(); // get available directions
         Room[] exitDestinations = currentRoom.getExitDestinations(); // get rooms in those directions
         status = "I don't see that room."; // default if direction not found
-        for (int i = 0; i < exitDirections.length; i++){// loop through directions
+        for (int i = 0; i < exitDirections.length; i++) {// loop through directions
             if (noun.equals(exitDirections[i])) {// if user direction matches
                 currentRoom = exitDestinations[i]; // change current room
                 status = "Changed Room"; //update status   
@@ -30,7 +30,7 @@ public class RoomAdventure {
     private static void handleLook(String noun) {// handles inspecting items
         status = "I don't see that item."; // default if item not found
         for (Item item : currentRoom.getItems()) {//loop through items
-            if (item.toString().equals(noun)){// if user-noun matches an item
+            if (item.toString().equals(noun)) {// if user-noun matches an item
                 status = item.getDescription(); // set status to item description    
             }    
         }    
@@ -38,15 +38,15 @@ public class RoomAdventure {
 
     private static void handleTake(String noun) { // handles picking up items
         status = "I can't grab that."; // default if not grabbable
-        for (Item item : currentRoom.getGrabbableItems()){ // loop through grabbable items
-            if (item.toString().equals(noun)){ // if user-noun matches grabbable
+        for (Item item : currentRoom.getGrabbableItems()) { // loop through grabbable items
+            if (item.toString().equals(noun)) { // if user-noun matches grabbable
                 for (int j = 0; j< inventory.length; j++) { // find empty inventory slot
                     if (inventory[j] == null) { // if slot is empty
                         inventory[j] = item; //add item to inventory
                         status = "Added it to the inventory"; // update status
                         currentRoom.getItems().remove(item); // removes item from room
                         break; // exit inventory loop
-                    }else{
+                    } else {
                         status = "Your inventory is full";
                     }
                 }    
@@ -56,8 +56,8 @@ public class RoomAdventure {
 
     private static void handleEat(String noun) {
         status = "I can't eat that, silly goose.";
-        for(Item item : currentRoom.getEdibleItems()){
-            if (item.toString().equals(noun)){
+        for (Item item : currentRoom.getEdibleItems()) {
+            if (item.toString().equals(noun)) {
                 status = "You have eaten it. You seem to have died! Too bad.\n";
                 death = true;
                 break;
@@ -69,7 +69,7 @@ public class RoomAdventure {
         status = "um no";
         for (Item item: inventory) {
             if (item != null && noun.equals("harmonica")) {
-                if (currentRoom.getRoomName().equals("Room 4")){
+                if (currentRoom.getRoomName().equals("Room 4")) {
                     status = "You played the harmonica beautifully, the mirror shimmers turning into a door.";
                     for (Item roomItem : currentRoom.getItems()) {
                         if (roomItem.toString().equals("mirror")) {
@@ -78,7 +78,7 @@ public class RoomAdventure {
                             break;
                         }
                     }
-                }else{
+                } else {
                     status = "The harmonica sounds like the screeching wails of the dead, you are not good at this.";
                 }
             }
@@ -89,25 +89,25 @@ public class RoomAdventure {
         status = "Why?";
         for (Item item: inventory){
             if(item!= null && item.toString().equals("key") && noun.equals("key")){
-                if (currentRoom.getRoomName().equals("Room 4")){
-                    for(Item roomItem: currentRoom.getItems()){
-                        if (roomItem.toString().equals("door")){
+                if (currentRoom.getRoomName().equals("Room 4")) {
+                    for (Item roomItem: currentRoom.getItems()) {
+                        if (roomItem.toString().equals("door")) {
                             status = "You use the key on the door and open it. There is a bright light and you exit the four roomed purgatory. You are free.";
                             win = true;
                             break;
                         }
                     }
                 }
-            } else if(item != null && item.toString().equals("knife") && noun.equals("knife")){
+            } else if (item != null && item.toString().equals("knife") && noun.equals("knife")) {
                 status = "You use the knife on yourself. You stabbed yourself. Why?";
                 death = true;
-            } else if(item != null && item.toString().equals("coal") && noun.equals("coal")){
-                if (currentRoom.getRoomName().equals("Room 2")){
+            } else if (item != null && item.toString().equals("coal") && noun.equals("coal")) {
+                if (currentRoom.getRoomName().equals("Room 2")) {
                     status = "You throw the coal into the fire. It gets brighter and hotter. You blow up.";
                     death = true;
                 }
-            } else if(item != null && item.toString().equals("bat") && noun.equals("bat")){
-                if (currentRoom.getRoomName().equals("Room 3")){
+            } else if (item != null && item.toString().equals("bat") && noun.equals("bat")) {
+                if (currentRoom.getRoomName().equals("Room 3")) {
                     status = "You put the bat into the oven. I don't know why you did that. You take it back out.";
                 }
             }
