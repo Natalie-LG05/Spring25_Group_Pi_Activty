@@ -7,6 +7,7 @@ public class RoomAdventure {
     private static Room currentRoom; // the room the player is currently in
     private static Item[] inventory = {null, null, null, null, null}; // player inventory slots
     private static String status; // message to display after each action
+    private static boolean running = true;
     private static boolean death = false;
     private static boolean win = false;
 
@@ -229,13 +230,13 @@ public class RoomAdventure {
 
         System.out.println("What is your name?: ");
         String playerName = s.nextLine();
-        while(true){// game loop, runs until program is terminated
+        while(running){// game loop, runs until program is terminated
             System.out.print(currentRoom.toString());// display current room description
             System.out.print(playerName + "'s inventory: "); // prompt for inventory display
-            
-            for (int i = 0; i < inventory.length; i++){
-                if(inventory[i] != null){
-                    System.out.print(inventory[i] + " ");
+
+            for (Item item : inventory) {
+                if (item != null) {
+                    System.out.print(item + " ");
                 }
             }
             System.out.println("\nWhat would you like to do, " + playerName + "?");
@@ -244,8 +245,8 @@ public class RoomAdventure {
 
             if (words.length != 2) {
                 status = DEFAULT_STATUS;
+                System.out.println(status);
                 continue;
-
             }
             String verb = words[0]; // first word is the action verb
             String noun = words[1]; // second word is the target noun
@@ -272,23 +273,29 @@ public class RoomAdventure {
                     status = DEFAULT_STATUS; // set status to error message
             }
             System.out.println(status); // print status
-            if (death == true){
+
+            if (death){
                 System.out.println("You have perished.");
+                running = false;
                 System.exit(0);
+                break;
             }
-            if (win == true){
+            if (win){
                 System.out.println("Congratulations!");
+                running = false;
                 System.exit(0);
+                break;
             }
         }    
     }
 }
 
+
 class Room { // represents a game room
     private String name; //room name
     private String[] exitDirections; // directions you can go
     private Room[] exitDestinations; // rooms reached by each direction
-    private List<Item> items; //List of Item objects
+    private List<Item> items; // List of Item objects
 
     public Room(String name) { //constructor
         this.name = name; //set the room's name
@@ -362,6 +369,7 @@ class Room { // represents a game room
     }
 }
 
+
 class Item{
 
     private String name;
@@ -409,6 +417,4 @@ class Item{
     public String toString(){
         return name;
     }
-
-
 }
