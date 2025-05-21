@@ -36,10 +36,10 @@ public class RoomAdventure {
         }    
     }
 
-    private static void handleTake(String noun) {// handles picking up items
+    private static void handleTake(String noun) { // handles picking up items
         status = "I can't grab that."; // default if not grabbable
-        for (Item item : currentRoom.getGrabbableItems()){// loop through grabbable items
-            if (item.toString().equals(noun)){// if user-noun matches grabbable
+        for (Item item : currentRoom.getGrabbableItems()){ // loop through grabbable items
+            if (item.toString().equals(noun)){ // if user-noun matches grabbable
                 for (int j = 0; j< inventory.length; j++) { // find empty inventory slot
                     if (inventory[j] == null) { // if slot is empty
                         inventory[j] = item; //add item to inventory
@@ -60,20 +60,22 @@ public class RoomAdventure {
             if (item.toString().equals(noun)){
                 status = "You have eaten it. You seem to have died! Too bad.\n";
                 death = true;
+                break;
             }
         }
     }
 
     private static void handlePlay(String noun){
         status = "um no";
-        for (Item item: inventory){
-            if(item != null && item.toString().equals("harmonica")){
+        for (Item item: inventory) {
+            if (item != null && noun.equals("harmonica")) {
                 if (currentRoom.getRoomName().equals("Room 4")){
                     status = "You played the harmonica beautifully, the mirror shimmers turning into a door.";
                     for (Item roomItem : currentRoom.getItems()) {
                         if (roomItem.toString().equals("mirror")) {
                             roomItem.setDescription("The mirror turned into a wooden door. There's a keyhole.");
                             roomItem.setItemName("door");
+                            break;
                         }
                     }
                 }else{
@@ -92,6 +94,7 @@ public class RoomAdventure {
                         if (roomItem.toString().equals("door")){
                             status = "You use the key on the door and open it. There is a bright light and you exit the four roomed purgatory. You are free.";
                             win = true;
+                            break;
                         }
                     }
                 }
@@ -230,8 +233,8 @@ public class RoomAdventure {
 
         System.out.println("What is your name?: ");
         String playerName = s.nextLine();
-        while(running){// game loop, runs until program is terminated
-            System.out.print(currentRoom.toString());// display current room description
+        while(running){ // game loop, runs until program is terminated
+            System.out.print(currentRoom.toString()); // display current room description
             System.out.print(playerName + "'s inventory: "); // prompt for inventory display
 
             for (Item item : inventory) {
@@ -243,13 +246,20 @@ public class RoomAdventure {
             String input = s.nextLine(); // read entire line of input
             String[] words = input.split(" ");
 
+            // If the player types quit or q as the first word, exit
+            if (words[0].equalsIgnoreCase("quit") || words[0].equalsIgnoreCase("q")) {
+                running = false;
+                break;
+            }
+
             if (words.length != 2) {
                 status = DEFAULT_STATUS;
                 System.out.println(status);
                 continue;
             }
-            String verb = words[0]; // first word is the action verb
-            String noun = words[1]; // second word is the target noun
+
+            String verb = words[0].toLowerCase(); // first word is the action verb
+            String noun = words[1].toLowerCase(); // second word is the target noun
             switch (verb){ // decide which action to take
                 case "go":
                     handleGo(noun); // move to another room
@@ -310,7 +320,7 @@ class Room { // represents a game room
         return name;
     }
 
-    public void setExitDirections(String[] exitDirections){// setter for exits
+    public void setExitDirections(String[] exitDirections){ // setter for exits
         this.exitDirections = exitDirections;
     }
 
@@ -318,7 +328,7 @@ class Room { // represents a game room
         return exitDirections;
     }
 
-    public void setExitDestinations(Room[] exitDestinations){// setter for exits
+    public void setExitDestinations(Room[] exitDestinations){ // setter for exits
         this.exitDestinations = exitDestinations;
     }
 
@@ -326,11 +336,11 @@ class Room { // represents a game room
         return exitDestinations;
     }
 
-    public void addItem(Item item){// setter for items
+    public void addItem(Item item){ // setter for items
         items.add(item);    
     }
 
-    public List<Item> getItems() {//getter for items
+    public List<Item> getItems() { //getter for items
         return items;    
     }
 
@@ -355,14 +365,14 @@ class Room { // represents a game room
     }
 
     // @Override don't need
-    public String toString(){// custom print for the room
+    public String toString(){ // custom print for the room
         String result = "\nLocation: " + name; // show room name
         result +="\nYou See: "; // list items
-        for (Item item : items){// loop items
+        for (Item item : items){ // loop items
             result += item + " "; // append each line    
         }
         result += "\nExits: "; // list exits
-        for (String direction: exitDirections){// loop exits
+        for (String direction: exitDirections){ // loop exits
             result += direction + " "; // append each direction
         }
         return result + "\n"; // return full description
