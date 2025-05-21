@@ -1,9 +1,11 @@
 import java.util.Scanner; //import scanner for reading user input
+import java.util.ArrayList; // import array list for making objects of lists
+import java.util.List; //making lists
 
 public class RoomAdventure {
     // class variables
     private static Room currentRoom; // the room the player is ucrrently in
-    private static String[] inventory = {null, null, null, null, null}; // player inventory slots
+    private static Item[] inventory = {null, null, null, null, null}; // player inventory slots
     private static String status; // message to display after each action
     private static boolean death = false;
 
@@ -24,37 +26,36 @@ public class RoomAdventure {
     }
 
     private static void handleLook(String noun) {// handles inspecting items
-        String[] items = currentRoom.getItems();// visible items in current room
-        String[] itemDescriptions = currentRoom.getItemDescriptions();// descriptions for each item
         status = "I don't see that item."; // default if item not found
-        for (int i=0; i < items.length; i++) {//loop through items
-            if (noun.equals(items[i])){// if user-noun matches an item
-                status = itemDescriptions[i]; // set status to item description    
+        for (Item item : currentRoom.getItems()) {//loop through items
+            if (item.toString().equals(noun)){// if user-noun matches an item
+                status = item.getDescription(); // set status to item description    
             }    
         }    
     }
 
     private static void handleTake(String noun) {// handles picking up items
-        String[] grabbables = currentRoom.getGrabbables(); // items that can be taken
         status = "I can't grab that."; // default if not grabbable
-        for (String item : grabbables){// loop through grabbable items
-            if (noun.equals(item)){// if user-noun matches grabbable
+        for (Item item : currentRoom.getGrabbableItems()){// loop through grabbable items
+            if (item.toString().equals(noun)){// if user-noun matches grabbable
                 for (int j = 0; j< inventory.length; j++) { // find empty inventory slot
                     if (inventory[j] == null) { // if slot is empty
-                        inventory[j] = noun; //add item to inventory
+                        inventory[j] = item; //add item to inventory
                         status = "Added it to the inventory"; // update status
+                        currentRoom.getItems().remove(item); // removes item from room
                         break; // exit inventory loop
-                    }    
+                    }else{
+                        status = "Your inventory is full";
+                    }
                 }    
             }    
         }
     }
 
     private static void handleEat(String noun) {
-        String[] edibles = currentRoom.getEdibles();
         status = "I can't eat that, silly goose.";
-        for(String item : edibles){
-            if (noun.equals(item)){
+        for(Item item : currentRoom.getEdibleItems()){
+            if (item.toString().equals(noun)){
                 status = "You have eaten it. You seem to have died! Too bad.\n";
                 death = true;
             }
@@ -67,68 +68,112 @@ public class RoomAdventure {
         Room room3 = new Room("Room 3");
         Room room4 = new Room("Room 4");
         
+        // Room 1 setup
         String[] room1ExitDirections = {"east", "south"}; // room 1 exits
         Room[] room1ExitDestinations = {room2, room3}; // destination rooms for room 1
-        String[] room1Items = {"chair", "desk"}; // items in room 1
-        String[] room1ItemDescriptions = {
-            "It is a chair",
-            "It's a desk, there is a key on it."
-        };
-        String[] room1Grabbables = {"key"}; // items you can take from room 1
+
+        // Room 1 items
+        Item chair = new Item("chair");
+        chair.setDescription("It is a chair");
+        chair.setIsGrabbable(false);
+
+        Item desk = new Item("desk");
+        desk.setDescription("It's a desk, there is a key on it.");
+        desk.setIsGrabbable(false);
+
+        Item key = new Item("key");
+        key.setDescription("A small rusty key.");
+        key.setIsGrabbable(true);
+
+        room1.addItem(chair);
+        room1.addItem(desk);
+        room1.addItem(key);
         room1.setExitDirections(room1ExitDirections);
         room1.setExitDestinations(room1ExitDestinations);
-        room1.setItems(room1Items);
-        room1.setItemDescriptions(room1ItemDescriptions);
-        room1.setGrabbables(room1Grabbables);
 
+
+        // Room 2 setup
         String[] room2ExitDirections = {"west", "south"}; // room 1 exits
         Room[] room2ExitDestinations = {room1, room4}; // destination rooms for room 1
-        String[] room2Items = {"fireplace", "rug"}; // items in room 1
-        String[] room2ItemDescriptions = {
-            "It's on fire.",
-            "There is a lump of coal on the rug."
-        };
-        String[] room2Grabbables = {"coal"}; // items you can take from room 1
+
+        // Room 2 Items
+        Item fireplace = new Item("fireplace");
+        fireplace.setDescription("It's on fire.");
+        fireplace.setIsGrabbable(false);
+
+        Item rug = new Item("rug");
+        fireplace.setDescription("There is a lump of coal on the rug.");
+        fireplace.setIsGrabbable(false);
+
+        Item coal = new Item("coal");
+        coal.setDescription("Its lumpy and black.");
+        coal.setIsGrabbable(true);
+        coal.setIsEdible(true);
+
+        room2.addItem(coal);
+        room2.addItem(fireplace);
+        room2.addItem(rug);
         room2.setExitDirections(room2ExitDirections);
         room2.setExitDestinations(room2ExitDestinations);
-        room2.setItems(room2Items);
-        room2.setItemDescriptions(room2ItemDescriptions);
-        room2.setGrabbables(room2Grabbables);
 
+
+        // Room 3 setup
         String[] room3ExitDirections = {"north","east"}; // room 3 exits
         Room[] room3ExitDestinations = {room1, room4}; // destination rooms for room 3
-        String[] room3Items = {"oven", "cutting-board"}; // items in room 3
-        String[] room3ItemDescriptions = {
-            "It's cold and dirty.",
-            "There is a partially cut, weird smelling lemon and a knife."
-        };
-        String[] room3Grabbables = {"knife"}; // items you can take from room 3
-        String[] room3Edibles = {"lemon"};
+
+        // Room 3 Items
+        Item oven = new Item("oven");
+        oven.setDescription("It's cold and dirty.");
+        oven.setIsGrabbable(false);
+
+        Item cuttingBoard = new Item("cutting-board");
+        cuttingBoard.setDescription("There is a partially cut, weird smelling lemon and a knife.");
+        cuttingBoard.setIsGrabbable(false);
+
+        Item lemon = new Item("lemon");
+        lemon.setDescription("It smells weird and looks a bit not lemon-y");
+        lemon.setIsEdible(true);
+        lemon.setIsGrabbable(true);
+
+        Item knife = new Item("knife");
+        knife.setDescription("It's pretty sharp, I should be careful.");
+        knife.setIsGrabbable(true);
+
+        room3.addItem(knife);
+        room3.addItem(lemon);
+        room3.addItem(cuttingBoard);
+        room3.addItem(oven);
         room3.setExitDirections(room3ExitDirections);
         room3.setExitDestinations(room3ExitDestinations);
-        room3.setItems(room3Items);
-        room3.setItemDescriptions(room3ItemDescriptions);
-        room3.setGrabbables(room3Grabbables);
-        room3.setEdibles(room3Edibles);
 
+
+        // Room 4 setup
         String[] room4ExitDirections = {"north","west"}; // room 4 exits
         Room[] room4ExitDestinations = {room2, room4}; // destination rooms for room 4
-        String[] room4Items = {"a mirror", "a bat"}; // items in room 4
-        String[] room4ItemDescriptions = {
-            "You can see the room, but you are not in it. You can see a harmonica in the corner now.",
-            "Is it a bat or a bat? You cannot tell"
-        };
-        String[] room4Grabbables = {"harmonica"}; // items you can take from room 4
-        String[] room4Edibles = {};
+
+        // Room 4 Items
+        Item mirror = new Item("mirror");
+        mirror.setDescription("You can see the room, but you are not in it. You can see a harmonica in the corner now.");
+        mirror.setIsGrabbable(false);
+
+        Item bat = new Item("bat");
+        bat.setDescription("Is it a bat or a bat? You cannot tell");
+        bat.setIsGrabbable(true);
+
+        Item harmonica = new Item("harmonica");
+        harmonica.setDescription("It looks functional?");
+        harmonica.setIsGrabbable(true);
+
+        room4.addItem(harmonica);
+        room4.addItem(bat);
+        room4.addItem(mirror);
         room4.setExitDirections(room4ExitDirections);
         room4.setExitDestinations(room4ExitDestinations);
-        room4.setItems(room4Items);
-        room4.setItemDescriptions(room4ItemDescriptions);
-        room4.setGrabbables(room4Grabbables);
-        room4.setEdibles(room4Edibles);
 
         currentRoom = room1; // start game in room 1
     }
+
+
     //@SuppressWarnings("java:S2189") don't need
     public static void main(String[] args){// entry point of the program
         setupGame(); // initialize rooms, items, and starting room
@@ -141,7 +186,9 @@ public class RoomAdventure {
             System.out.print(playerName + "'s inventory: "); // promtot for invetory display
             
             for (int i = 0; i < inventory.length; i++){
-                System.out.print(inventory[i] + " ");
+                if(inventory[i] != null){
+                    System.out.print(inventory[i] + " ");
+                }
             }
             System.out.println("\nWhat would you like to do, " + playerName + "?");
             String input = s.nextLine(); // read entire line of input
@@ -182,13 +229,11 @@ class Room { // represents a game room
     private String name; //room name
     private String[] exitDirections; // directions you can go
     private Room[] exitDestinations; // rooms reached by each direction
-    private String[] items; // items visible in the room
-    private String[] itemDescriptions; // descriptions for those items
-    private String[] grabbables; // items you can take
-    private String[] edibles;
+    private List<Item> items; //List of Item objects
 
     public Room(String name) { //constructor
-        this.name = name; //set the room's name    
+        this.name = name; //set the room's name
+        this.items = new ArrayList<>(); // Initialize item list
     }
 
     public void setExitDirections(String[] exitDirections){// setter for exits
@@ -207,43 +252,39 @@ class Room { // represents a game room
         return exitDestinations;
     }
 
-    public void setItems(String[] items){// setter for items
-        this.items = items;    
+    public void addItem(Item item){// setter for items
+        items.add(item);    
     }
 
-    public String[] getItems() {//getter for items
+    public List<Item> getItems() {//getter for items
         return items;    
     }
 
-    public void setItemDescriptions(String[] itemDescriptions){// setter for descriptions
-        this.itemDescriptions = itemDescriptions;
+    public List<Item> getGrabbableItems() {
+        List<Item> grabbables = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getIsGrabbable()) {
+                grabbables.add(item);
+            }
+        }
+        return grabbables;
     }
 
-    public String[] getItemDescriptions() {// getter for descriptions
-        return itemDescriptions;    
-    }
-
-    public void setGrabbables(String[] grabbables) {// setter for grabbable items
-        this.grabbables = grabbables;   
-    }
-
-    public String[] getGrabbables() {// getter for grabbable items
-        return grabbables;    
-    }
-
-    public void setEdibles(String[] edibles) {// setter for grabbable items
-        this.edibles = edibles;   
-    }
-
-    public String[] getEdibles() {// getter for grabbable items
-        return edibles;    
+    public List<Item> getEdibleItems() {
+        List<Item> edibles = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getIsEdible()) {
+                edibles.add(item);
+            }
+        }
+        return edibles;
     }
 
     // @Override don't need
     public String toString(){// custom print for the room
         String result = "\nLocation: " + name; // show room name
         result +="\nYou See: "; // list items
-        for (String item: items){// loop items
+        for (Item item : items){// loop items
             result += item + " "; // append each line    
         }
         result += "\nExits: "; // list exits
@@ -252,4 +293,47 @@ class Room { // represents a game room
         }
         return result + "\n"; // return full description
     }
+}
+
+class Item{
+
+    private String name;
+    private String description;
+    private boolean isGrabbable;
+    private boolean isEdible;
+
+    public Item(String name){
+        this.name = name;
+    }
+
+    //Getters and Setters
+    public void setDescription(String desc){
+        description = desc;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public void setIsGrabbable(boolean grababble){
+        isGrabbable = grababble;
+    }
+
+    public boolean getIsGrabbable(){
+        return isGrabbable;
+    }
+
+    public void setIsEdible(boolean edible){
+        isEdible = edible;
+    }
+
+    public boolean getIsEdible(){
+        return isEdible;
+    }
+
+    public String toString(){
+        return name;
+    }
+
+
 }
